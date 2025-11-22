@@ -1,0 +1,158 @@
+{
+  "info": {
+    "name": "GapGrabber Backend API",
+    "description": "API collection for GapGrabber slot-filling backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API is running"
+      }
+    },
+    {
+      "name": "Get Appointments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/appointments?status=scheduled",
+          "host": ["{{base_url}}"],
+          "path": ["api", "appointments"],
+          "query": [
+            {
+              "key": "status",
+              "value": "scheduled",
+              "description": "Filter by status"
+            }
+          ]
+        },
+        "description": "Get all appointments, optionally filtered by status"
+      }
+    },
+    {
+      "name": "Cancel Appointment & Fill Slot",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"discount_percentage\": 10,\n  \"wait_time_minutes\": 1,\n  \"custom_context\": \"Customer cancelled last minute - emergency slot available!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/appointments/{{appointment_id}}/cancel-and-fill",
+          "host": ["{{base_url}}"],
+          "path": ["api", "appointments", "{{appointment_id}}", "cancel-and-fill"]
+        },
+        "description": "Cancel an appointment and automatically trigger slot fill campaign. This is what the dashboard calls when business owner clicks 'Cancel & Fill Slot'."
+      }
+    },
+    {
+      "name": "Get Campaign Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/campaigns/{{campaign_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "campaigns", "{{campaign_id}}"]
+        },
+        "description": "Get details of a specific campaign including outreach attempts"
+      }
+    },
+    {
+      "name": "Get Messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/messages?campaign_id={{campaign_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "messages"],
+          "query": [
+            {
+              "key": "campaign_id",
+              "value": "{{campaign_id}}",
+              "description": "Filter by campaign ID"
+            }
+          ]
+        },
+        "description": "Get conversation history, optionally filtered by customer or campaign"
+      }
+    },
+    {
+      "name": "Webhook - Simulate Customer Response",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "From",
+              "value": "whatsapp:+1234567890",
+              "type": "text"
+            },
+            {
+              "key": "Body",
+              "value": "Yes, I can do tomorrow at 2pm!",
+              "type": "text"
+            },
+            {
+              "key": "MessageSid",
+              "value": "SMtest123",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/webhooks/twilio",
+          "host": ["{{base_url}}"],
+          "path": ["webhooks", "twilio"]
+        },
+        "description": "Simulate incoming WhatsApp message from customer (normally called by Twilio)"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "campaign_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "appointment_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}
+
